@@ -30,7 +30,7 @@ config :logger, :console,
 config :phoenix, :json_library, Jason
 
 config :message_queue, :rate_limit_interval_milliseconds, 1000
-config :message_queue, :automatically_enqueue, true
+config :message_queue, :manual_enqueue, false
 
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.

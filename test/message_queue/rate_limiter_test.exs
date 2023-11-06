@@ -20,6 +20,10 @@ defmodule MessageQueue.RateLimiterTest do
 
     send(pid, {:handle_next, "foo"})
 
+    assert RateLimiter.state() == %{"bar" => ["fizz", "foo"], "foo" => []}
+
+    send(pid, {:handle_next, "foo"})
+
     assert RateLimiter.state() == %{"bar" => ["fizz", "foo"]}
   end
 end

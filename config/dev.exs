@@ -51,6 +51,3 @@ config :phoenix, :stacktrace_depth, 20
 
 # Initialize plugs at runtime for faster development compilation
 config :phoenix, :plug_init_mode, :runtime
-
-config :message_queue, :manual_rate_limit_enqueue, false
-config :message_queue, :rate_limit_interval_milliseconds, 1000

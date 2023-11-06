@@ -27,15 +27,17 @@ defmodule MessageQueue.RateLimiter do
 
   @impl true
   def handle_call({:send_message, queue, message}, _from, state) do
-    messages = state |> Map.get(queue, [])
+    messages = state |> Map.get(queue)
 
-    case messages do
-      [] ->
-        next_timer(queue)
+    messages =
+      case messages do
+        nil ->
+          next_timer(queue)
+          []
 
-      _ ->
-        nil
-    end
+        m ->
+          m
+      end
 
     new_state = state |> Map.put(queue, messages ++ [message])
 
@@ -44,19 +46,19 @@ defmodule MessageQueue.RateLimiter do
 
   @impl true
   def handle_info({:handle_next, queue}, state) do
-    [message | rest] = state |> Map.get(queue)
-    # in real world examples this would probably end up being
-    # a tuple of values we could feed into apply()
-    IO.write("#{queue}: #{message}\n")
-
-    if rest != [] do
-      next_timer(queue, poll_rate())
-    end
+    messages = state |> Map.get(queue)
 
     state =
-      case rest do
-        [] -> Map.delete(state, queue)
-        _ -> state |> Map.put(queue, rest)
+      case messages do
+        [message | rest] ->
+          # in real world examples this would probably end up being
+          # a tuple of values we could feed into apply()
+          IO.write("#{queue}: #{message}\n")
+          next_timer(queue, poll_rate())
+          state |> Map.put(queue, rest)
+
+        _ ->
+          state |> Map.delete(queue)
       end
 
     {:noreply, state}
@@ -75,7 +77,7 @@ defmodule MessageQueue.RateLimiter do
     Application.get_env(:message_queue, :manual_enqueue)
   end
 
-  defp next_timer(queue, rate \\ 100) do
+  defp next_timer(queue, rate \\ 1) do
     # can also use :timer.send_interval, the trade-off being potentially not
     # being finished before the next tick, this way there could be drift but you
     # guarantee one tick finishes before the next.  However, these would be
