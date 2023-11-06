@@ -13,5 +13,5 @@ config :logger, level: :warning
 # Initialize plugs at runtime for faster test compilation
 config :phoenix, :plug_init_mode, :runtime
 
-config :message_queue, :manual_rate_limit_enqueue, true
+config :message_queue, :manual_enqueue, true
 config :message_queue, :rate_limit_interval_milliseconds, 1
