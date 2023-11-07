@@ -10,3 +10,6 @@ Now you can visit [`localhost:4000`](http://localhost:4000/receive-message) from
 Required arguments for the endpoint are `queue` and `message`.  One messsage per each queue will be printed per second.
 
 The `test.sh` file will send multiple requests.
+
+The `ets` branch uses an ets table for enqueuing requests freeing up the
+genserver thread to exclusively handle processing requests
