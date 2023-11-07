@@ -4,8 +4,6 @@ defmodule MessageQueue.RateLimiterTest do
   alias MessageQueue.RateLimiter
 
   test "prints each message " do
-    {_, {_, pid}} = RateLimiter.start_link([])
-
     RateLimiter.send_message("foo", "bar")
     RateLimiter.send_message("foo", "baz")
 
@@ -14,15 +12,15 @@ defmodule MessageQueue.RateLimiterTest do
 
     assert RateLimiter.state() == %{"foo" => ["bar", "baz"], "bar" => ["fizz", "foo"]}
 
-    send(pid, {:handle_next, "foo"})
+    RateLimiter.handle_next("foo")
 
     assert RateLimiter.state() == %{"foo" => ["baz"], "bar" => ["fizz", "foo"]}
 
-    send(pid, {:handle_next, "foo"})
+    RateLimiter.handle_next("foo")
 
     assert RateLimiter.state() == %{"bar" => ["fizz", "foo"], "foo" => []}
 
-    send(pid, {:handle_next, "foo"})
+    RateLimiter.handle_next("foo")
 
     assert RateLimiter.state() == %{"bar" => ["fizz", "foo"]}
   end
